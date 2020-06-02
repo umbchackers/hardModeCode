@@ -10,9 +10,6 @@
         indentUnit: 4
     });
 
-    // set dark mode
-    // editor.setOption("theme", "material-darker");
-
     // display problem carousel at top of page
     populateCarousel(editor);
 

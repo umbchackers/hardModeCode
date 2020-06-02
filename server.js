@@ -1,4 +1,5 @@
 // user-defined constants
+// TODO change this to environment variables
 const PORT = 3000;
 const IP = "127.0.0.1"; // change to 0.0.0.0 for current ip
 
@@ -128,10 +129,10 @@ app.post("/submit", (req, res) => {
 });
 
 /**
-* Given a language, it will return the file extension of that language.
-* 
-* @param {String} language 
-*/
+ * Given a language, it will return the file extension of that language.
+ * 
+ * @param {String} language 
+ */
 function getFileExtension(language) {
     switch (language) {
         case JAVASCRIPT:
@@ -142,13 +143,13 @@ function getFileExtension(language) {
 }
 
 /**
-* This will execute code and provide the output, error, and exit code
-* via a callback function.
-* 
-* @param {String} command 
-* @param {[String]} args 
-* @param {Function} callback 
-*/
+ * This will execute code and provide the output, error, and exit code
+ * via a callback function.
+ * 
+ * @param {String} command 
+ * @param {[String]} args 
+ * @param {Function} callback 
+ */
 function runCommand(command, args, callback) {
     // start process
     const child = child_process.spawn(command, args);

@@ -7,9 +7,3 @@ This would be a competitive programming event where multiple users would connect
 ## To Run
 > npm install  
 > node server.js
-
-## TODO
-- Duplicate Filename Resolution
-- Add Python and C++ support
-- Problem code hightlighting?
-- Run on Docker container for security
