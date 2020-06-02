@@ -1,13 +1,17 @@
 /**
-* Setup the web application.
-*/
+ * Setup the web application.
+ */
 (function setup() {
     // create a CodeMirror instance
     const editor = CodeMirror(document.getElementById("editor"), {
         mode: "javascript",
         lineNumbers: true,
+        styleActiveLine: { nonEmpty: true },
         indentUnit: 4
     });
+
+    // set dark mode
+    // editor.setOption("theme", "material-darker");
 
     // display problem carousel at top of page
     populateCarousel(editor);
@@ -73,8 +77,8 @@ function populateCarousel(editor) {
 }
 
 /**
-* Reset the value of the CodeMirror editor instance.
-*/
+ * Reset the value of the CodeMirror editor instance.
+ */
 let numResets = 0;
 function reset(editor) {
     // overwrite editor previous value with nothing
@@ -87,8 +91,8 @@ function reset(editor) {
 }
 
 /**
-* Submit the code to the server to be tested.
-*/
+ * Submit the code to the server to be tested.
+ */
 function submit(editor) {
     // get code from CodeMirror editor
     const code = editor.getValue();
@@ -118,15 +122,15 @@ function submit(editor) {
 
                 alert("Solved!");
 
-                // TODO calculate score
+                // TODO calculate score with number of resets, number of lines, number of attempts, and time?
             }
         });
     }
 }
 
 /**
-* Get problem text and generate HTML from the MD
-*/
+ * Get problem text and generate HTML from the MD
+ */
 function getProblem(editor, problem) {
     // reset number of resets per problem
     numResets = 0;
@@ -145,6 +149,10 @@ function getProblem(editor, problem) {
 
         // set problem div to generated problem HTML
         document.getElementById("problem").innerHTML = converter.makeHtml(data.problem);
+
+        // reset the number of resets
+        numResets = 0;
+        document.getElementById("numResets").innerHTML = numResets;
 
         // start the timer
         startStopwatch();
@@ -185,21 +193,24 @@ function startStopwatch() {
     }, 1000);
 }
 
+/**
+ * Stop the timer.
+ */
 function stopStopwatch() {
     clearInterval(interval);
 }
 
 /**
-* Prevent user from accesing the right-click ("context") menu.
-*/
+ * Prevent user from accesing the right-click ("context") menu.
+ */
 function disableContextMenu() {
     document.addEventListener('contextmenu', e => e.preventDefault());
 }
 
 /**
-* Prevent Cmd/Ctrl and Backspace key events that would allow users to edit
-* their code.
-*/
+ * Prevent Cmd/Ctrl and Backspace key events that would allow users to edit
+ * their code.
+ */
 function disableEditingKeys() {
     document.body.addEventListener("keydown", (e) => {
         // if Cmd/Ctrl key or backspace
@@ -211,8 +222,8 @@ function disableEditingKeys() {
 }
 
 /**
-* Disable mouse clicking within the CodeMirror editor.
-*/
+ * Disable mouse clicking within the CodeMirror editor.
+ */
 function disableEditorMouseClicks(editor) {
     editor.on("mousedown", (instance, e) => {
         // focus on the editor when it get's clicked
