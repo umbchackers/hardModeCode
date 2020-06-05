@@ -11,6 +11,7 @@ const PYTHON = "python";
 const path = require('path');
 const fs = require('fs');
 const child_process = require('child_process');
+const shortid = require('shortid');
 
 // express imports to create server
 const express = require("express");
@@ -86,7 +87,7 @@ app.post("/submit", (req, res) => {
     const fileExtension = getFileExtension(language);
 
     // save file
-    const filename = new Date().getTime() + fileExtension;
+    const filename = `${shortid.generate()}${fileExtension}`;
     fs.writeFileSync(filename, code);
 
     console.log("\nSaved file to " + filename);
