@@ -1,11 +1,7 @@
-// user-defined constants
-// TODO change this to environment variables
-const PORT = 3000;
-const IP = "127.0.0.1"; // change to 0.0.0.0 for current ip
+require('dotenv').config();
 
-// program constants
-const JAVASCRIPT = "javascript";
-const PYTHON = "python";
+// Program constants and enviroment stuff
+const { PORT, IP, JAVASCRIPT: JS, PYTHON: PY } = require('./constants');
 
 // imports for advanced node functionality
 const path = require('path');
@@ -136,9 +132,9 @@ app.post("/submit", (req, res) => {
  */
 function getFileExtension(language) {
     switch (language) {
-        case JAVASCRIPT:
+        case JS:
             return ".js";
-        case PYTHON:
+        case PY:
             return ".py";
     }
 }
