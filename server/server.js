@@ -16,7 +16,7 @@ const http = require("http");
 const server = http.createServer(app);
 
 // set static asset folder and user JSON body parsers
-app.use(express.static("public"));
+app.use(express.static("client/public"));
 app.use(express.json());
 
 /**
@@ -30,13 +30,13 @@ server.listen(PORT, IP, () => {
  * Serve the web application.
  */
 app.get("/", (req, res) => {
-    res.sendFile(__dirname + "/index.html");
+    res.sendFile("index.html", { root: "./client/public" });
 });
 
 /**
  * Send all the problem names.
  */
-const problems = fs.readdirSync("problems");
+const problems = fs.readdirSync("client/problems");
 app.get("/problems", (req, res) => {
     res.send({
         problems: problems
@@ -57,7 +57,7 @@ app.get("/problem/:name/:lang", (req, res) => {
     if (problem in cachedProblems)
         problemText = cachedProblems[problem + getFileExtension(language)];
     else {
-        problemText = fs.readFileSync(path.join("problems", problem, problem + getFileExtension(language) + ".md"), "utf-8").toString();
+        problemText = fs.readFileSync(path.join("./client/problems", problem, problem + getFileExtension(language) + ".md"), "utf-8").toString();
 
         cachedProblems[problem + getFileExtension(language)] = problemText;
     }
@@ -83,7 +83,7 @@ app.post("/submit", (req, res) => {
     const fileExtension = getFileExtension(language);
 
     // save file
-    const filename = `${shortid.generate()}${fileExtension}`;
+    const filename = `server/${shortid.generate()}${fileExtension}`;
     fs.writeFileSync(filename, code);
 
     console.log("\nSaved file to " + filename);
@@ -91,7 +91,7 @@ app.post("/submit", (req, res) => {
     console.log("Commencing tests.");
     
     // create arguments for mocha command
-    const testPath = path.join("problems", problem, problem + ".test.js");
+    const testPath = path.join("client/problems", problem, problem + ".test.js");
     const fileToTest = "--totest " + filename;
 
     // run the file
@@ -150,7 +150,7 @@ function getFileExtension(language) {
 function runCommand(command, args, callback) {
     // start process
     const child = child_process.spawn(command, args);
-
+    
     // get the output of code
     let stdout = "";
     child.stdout.setEncoding("utf8");
