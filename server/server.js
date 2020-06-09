@@ -1,7 +1,7 @@
 require('dotenv').config();
 
 // Program constants and enviroment stuff
-const { PORT, IP, JAVASCRIPT: JS, PYTHON: PY } = require('./constants');
+const { PORT, IP, LANGUAGES } = require('./constants');
 
 // imports for advanced node functionality
 const path = require('path');
@@ -131,11 +131,8 @@ app.post("/submit", (req, res) => {
  * @param {String} language 
  */
 function getFileExtension(language) {
-    switch (language) {
-        case JS:
-            return ".js";
-        case PY:
-            return ".py";
+    if (language in LANGUAGES) {
+        return LANGUAGES[language].extension;
     }
 }
 
