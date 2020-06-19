@@ -1,17 +1,26 @@
+const socket = io();
+let problem;
+
+// create a CodeMirror instance
+const editor = CodeMirror(document.getElementById("editor"), {
+    mode: "javascript",
+    lineNumbers: true,
+    styleActiveLine: { nonEmpty: true },
+    indentUnit: 4
+});
+
 /**
  * Setup the web application.
  */
 (function setup() {
-    // create a CodeMirror instance
-    const editor = CodeMirror(document.getElementById("editor"), {
-        mode: "javascript",
-        lineNumbers: true,
-        styleActiveLine: { nonEmpty: true },
-        indentUnit: 4
+    // whenever the server sends a problem name, show that problem
+    socket.on("problem", msg => {
+        problem = msg.problem;
+        getProblem(editor, msg.problem);
     });
 
     // display problem carousel at top of page
-    populateCarousel(editor);
+    // populateCarousel(editor);
 
     // automatically focus on the editor when page loads
     editor.focus();
@@ -23,7 +32,7 @@
     disableContextMenu();
 
     // disable keys that would allow user to edit their input
-    disableEditingKeys();
+    // disableEditingKeys();
 
     document.getElementById("reset").onclick = () => reset(editor);
     document.getElementById("submit").onclick = () => submit(editor);
@@ -95,23 +104,19 @@ function submit(editor) {
     const code = editor.getValue();
     const mode = editor.getOption("mode");
 
-    if (document.getElementsByClassName("problemButton active").length) {
-        // get problem name
-        const problem = document.getElementsByClassName("problemButton active")[0].innerHTML;
+    // convert code to JSON entity for POST request
+    const data = { language: mode, code: code, problem: problem };
 
-        // convert code to JSON entity for POST request
-        const data = { language: mode, code: code, problem: problem };
+    // create request object
+    const request = new Request("/submit", { method: "POST", headers: new Headers({ 'Content-Type': 'application/json' }), body: JSON.stringify(data) });
 
-        // create request object
-        const request = new Request("/submit", { method: "POST", headers: new Headers({'Content-Type': 'application/json'}), body: JSON.stringify(data) });
-
-        // send request to server
-        fetch(request)
+    // send request to server
+    fetch(request)
         .then(response => response.json())
         .then(data => {
             // show console errors and output
-            document.getElementById("console").value = data.output;
-            document.getElementById("console").value += data.error;
+            document.getElementById("console").innerHTML = data.output;
+            document.getElementById("console").innerHTML += `<p style="color: red">${data.error}</p>`;
 
             // if all tests passed, it is solved and stop counting time
             if (data.solved) {
@@ -122,7 +127,6 @@ function submit(editor) {
                 // TODO calculate score with number of resets, number of lines, number of attempts, and time?
             }
         });
-    }
 }
 
 /**

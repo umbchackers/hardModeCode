@@ -5,12 +5,11 @@
 
         <link rel="stylesheet" href="codemirror/lib/codemirror.css">
         <link rel="stylesheet" href="codemirror/theme/material-darker.css">
-        <link rel="stylesheet" href="style.css">
+        <link rel="stylesheet" href="css/style.css">
     </head>
 
     <body>
-        <div id="problemCarousel">
-        </div>
+        <!-- <div id="problemCarousel"></div> -->
 
         <div id="problem"></div>
 
@@ -36,7 +35,7 @@
             </div>
     
             <div id="output" class="tabcontent">
-                <textarea id="console" readonly></textarea>
+                <div id="console" readonly></div>
             </div>
         </div>
 
@@ -48,7 +47,9 @@
 
         <script src="codemirror/mode/javascript/javascript.js"></script>
         <script src="codemirror/mode/python/python.js"></script>
+
+        <script src="js/socket.io.js"></script>
         
-        <script src="app.js"></script>
+        <script src="js/app.js"></script>
     </body>
 </html>

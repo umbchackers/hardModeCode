@@ -9,20 +9,35 @@ const fs = require('fs');
 const child_process = require('child_process');
 const shortid = require('shortid');
 
-// express imports to create server
+// create express server
 const express = require("express");
 const app = express();
-const http = require("http");
-const server = http.createServer(app);
+
+// create socket.io conneciton
+const http = require("http").createServer(app);
+const io = require('socket.io')(http);
 
 // set static asset folder and user JSON body parsers
-app.use(express.static("client/public"));
+app.use(express.static("client/"));
 app.use(express.json());
+
+/**
+ * Listen for socket connection and disconnections.
+ */
+io.on("connection", socket => {
+    // when the socket first connects
+    console.log("User connected.");
+    socket.emit("problem", { problem: "n_fib" });
+
+    socket.on("disconnect", () => {
+        console.log("User disconnected.");
+    });
+});
 
 /**
 * Start the server listening at PORT number.
 */
-server.listen(PORT, IP, () => {
+http.listen(PORT, IP, () => {
     console.log("Server running on http://" + IP + ":" + PORT);
 });
 
@@ -30,7 +45,7 @@ server.listen(PORT, IP, () => {
  * Serve the web application.
  */
 app.get("/", (req, res) => {
-    res.sendFile("index.html", { root: "./client/public" });
+    res.sendFile("index.html");
 });
 
 /**
