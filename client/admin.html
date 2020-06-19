@@ -1,0 +1,37 @@
+<html>
+    <head>
+        <title>hardModeCode Admin</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <link rel="stylesheet" href="css/style.css">
+    </head>
+
+    <body>
+        <ul id="problems"></ul>
+
+        <script src="js/socket.io.js"></script>
+        <script>
+            const socket = io();
+
+            fetch("/problems")
+                .then(response => response.json())
+                .then(data => {
+                    const problemsEl = document.getElementById("problems");
+
+                    data.problems.forEach(problemName => {
+                        const li = document.createElement("li");
+
+                        const button = document.createElement("button");
+                        button.innerText = problemName;
+                        button.onclick = () => {
+                            socket.emit("setProblem", { problem: problemName });
+                        };
+
+                        li.appendChild(button);
+
+                        problemsEl.appendChild(li);
+                    });
+                });
+        </script>
+    </body>
+</html>

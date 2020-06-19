@@ -7,7 +7,7 @@
     background: #f5f5f5;
 }   
 
-#problem {
+body {
     font-family: sans-serif;
 }
 
@@ -15,21 +15,28 @@
     height: 5%;
 }
 
+#console {
+    white-space: pre;
+}
+
 #commands button {
     padding: 10px;
     border-radius: 5px;
 }
 
+#reset, #submit {
+    color: white;
+    border: 1px solid;
+}
+
 #reset {
     background-color: #DC3545;
     border-color: #DC3545;
-    color: white;
 }
 
 #submit {
     background-color: #28A745;
     border-color: #28A745;
-    color: white;
 }
 
 #console, #testResults { 

@@ -1,11 +1,7 @@
-// user-defined constants
-// TODO change this to environment variables
-const PORT = 3000;
-const IP = "127.0.0.1"; // change to 0.0.0.0 for current ip
+require('dotenv').config();
 
-// program constants
-const JAVASCRIPT = "javascript";
-const PYTHON = "python";
+// Program constants and enviroment stuff
+const { PORT, IP, LANGUAGES } = require('./constants');
 
 // imports for advanced node functionality
 const path = require('path');
@@ -13,20 +9,40 @@ const fs = require('fs');
 const child_process = require('child_process');
 const shortid = require('shortid');
 
-// express imports to create server
+// create express server
 const express = require("express");
 const app = express();
-const http = require("http");
-const server = http.createServer(app);
+
+// create socket.io conneciton
+const http = require("http").createServer(app);
+const io = require('socket.io')(http);
 
 // set static asset folder and user JSON body parsers
-app.use(express.static("public"));
+app.use(express.static("client/"));
 app.use(express.json());
+
+/**
+ * Listen for socket connection and disconnections.
+ */
+io.on("connection", socket => {
+    // when the socket first connects
+    console.log("User connected.");
+    socket.emit("problem", { problem: "n_fib" });
+    
+    // propagate problem set message to all clients
+    socket.on("setProblem", msg => {
+        io.emit("problem", msg);
+    });
+
+    socket.on("disconnect", () => {
+        console.log("User disconnected.");
+    });
+});
 
 /**
 * Start the server listening at PORT number.
 */
-server.listen(PORT, IP, () => {
+http.listen(PORT, IP, () => {
     console.log("Server running on http://" + IP + ":" + PORT);
 });
 
@@ -34,13 +50,17 @@ server.listen(PORT, IP, () => {
  * Serve the web application.
  */
 app.get("/", (req, res) => {
-    res.sendFile(__dirname + "/index.html");
+    res.sendFile("index.html");
+});
+
+app.get("/admin", (req, res) => {
+    res.sendFile("admin.html", { root: "client/"});
 });
 
 /**
  * Send all the problem names.
  */
-const problems = fs.readdirSync("problems");
+const problems = fs.readdirSync("client/problems");
 app.get("/problems", (req, res) => {
     res.send({
         problems: problems
@@ -61,7 +81,7 @@ app.get("/problem/:name/:lang", (req, res) => {
     if (problem in cachedProblems)
         problemText = cachedProblems[problem + getFileExtension(language)];
     else {
-        problemText = fs.readFileSync(path.join("problems", problem, problem + getFileExtension(language) + ".md"), "utf-8").toString();
+        problemText = fs.readFileSync(path.join("./client/problems", problem, problem + getFileExtension(language) + ".md"), "utf-8").toString();
 
         cachedProblems[problem + getFileExtension(language)] = problemText;
     }
@@ -87,7 +107,7 @@ app.post("/submit", (req, res) => {
     const fileExtension = getFileExtension(language);
 
     // save file
-    const filename = `${shortid.generate()}${fileExtension}`;
+    const filename = `server/${shortid.generate()}${fileExtension}`;
     fs.writeFileSync(filename, code);
 
     console.log("\nSaved file to " + filename);
@@ -95,7 +115,7 @@ app.post("/submit", (req, res) => {
     console.log("Commencing tests.");
     
     // create arguments for mocha command
-    const testPath = path.join("problems", problem, problem + ".test.js");
+    const testPath = path.join("client/problems", problem, problem + ".test.js");
     const fileToTest = "--totest " + filename;
 
     // run the file
@@ -135,11 +155,8 @@ app.post("/submit", (req, res) => {
  * @param {String} language 
  */
 function getFileExtension(language) {
-    switch (language) {
-        case JAVASCRIPT:
-            return ".js";
-        case PYTHON:
-            return ".py";
+    if (language in LANGUAGES) {
+        return LANGUAGES[language].extension;
     }
 }
 
@@ -154,7 +171,7 @@ function getFileExtension(language) {
 function runCommand(command, args, callback) {
     // start process
     const child = child_process.spawn(command, args);
-
+    
     // get the output of code
     let stdout = "";
     child.stdout.setEncoding("utf8");
