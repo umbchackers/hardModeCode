@@ -28,6 +28,11 @@ io.on("connection", socket => {
     // when the socket first connects
     console.log("User connected.");
     socket.emit("problem", { problem: "n_fib" });
+    
+    // propagate problem set message to all clients
+    socket.on("setProblem", msg => {
+        io.emit("problem", msg);
+    });
 
     socket.on("disconnect", () => {
         console.log("User disconnected.");
@@ -46,6 +51,10 @@ http.listen(PORT, IP, () => {
  */
 app.get("/", (req, res) => {
     res.sendFile("index.html");
+});
+
+app.get("/admin", (req, res) => {
+    res.sendFile("admin.html", { root: "client/"});
 });
 
 /**

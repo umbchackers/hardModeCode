@@ -9,17 +9,17 @@ const editor = CodeMirror(document.getElementById("editor"), {
     indentUnit: 4
 });
 
+// whenever the server sends a problem name, show that problem
+socket.on("problem", msg => {
+    problem = msg.problem;
+
+    getProblem(problem);
+});
+
 /**
  * Setup the web application.
  */
-(function setup() {
-    // whenever the server sends a problem name, show that problem
-    socket.on("problem", msg => {
-        problem = msg.problem;
-
-        getProblem(problem);
-    });
-
+(function initUI() {
     // display problem carousel at top of page
     // populateCarousel(editor);
 
