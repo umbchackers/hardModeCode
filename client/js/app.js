@@ -43,11 +43,10 @@ socket.on("problem", msg => {
  * 
  */
 function populateCarousel() {
-    fetch("/problems")
+    fetch("/problem/list")
     .then(response => response.json())
     .then(data => {
         // ref to problem carousel div
-        const problemCarousel = document.getElementById("problemCarousel");
 
         // list of all problem names
         const problems = data.problems;
@@ -109,7 +108,7 @@ function submit() {
     const data = { language: mode, code: code, problem: problem };
 
     // create request object
-    const request = new Request("/submit", { method: "POST", headers: new Headers({ 'Content-Type': 'application/json' }), body: JSON.stringify(data) });
+    const request = new Request("/problem/submit", { method: "POST", headers: new Headers({ 'Content-Type': 'application/json' }), body: JSON.stringify(data) });
 
     // send request to server
     fetch(request)
