@@ -1,5 +1,5 @@
 const socket = io();
-let problem;
+let problem = "";
 
 // create a CodeMirror instance
 const editor = CodeMirror(document.getElementById("editor"), {
@@ -16,7 +16,8 @@ const editor = CodeMirror(document.getElementById("editor"), {
     // whenever the server sends a problem name, show that problem
     socket.on("problem", msg => {
         problem = msg.problem;
-        getProblem(editor, msg.problem);
+
+        getProblem(problem);
     });
 
     // display problem carousel at top of page
@@ -26,22 +27,22 @@ const editor = CodeMirror(document.getElementById("editor"), {
     editor.focus();
 
     // disable mouse clicks on editor
-    disableEditorMouseClicks(editor);
+    disableEditorMouseClicks();
 
     // prevent user from accesing the right-click ("context") menu.
     disableContextMenu();
 
     // disable keys that would allow user to edit their input
-    // disableEditingKeys();
+    disableEditingKeys();
 
-    document.getElementById("reset").onclick = () => reset(editor);
-    document.getElementById("submit").onclick = () => submit(editor);
+    document.getElementById("reset").onclick = () => reset();
+    document.getElementById("submit").onclick = () => submit();
 })();
 
 /**
  * 
  */
-function populateCarousel(editor) {
+function populateCarousel() {
     fetch("/problems")
     .then(response => response.json())
     .then(data => {
@@ -86,7 +87,7 @@ function populateCarousel(editor) {
  * Reset the value of the CodeMirror editor instance.
  */
 let numResets = 0;
-function reset(editor) {
+function reset() {
     // overwrite editor previous value with nothing
     editor.setValue("");
 
@@ -99,7 +100,7 @@ function reset(editor) {
 /**
  * Submit the code to the server to be tested.
  */
-function submit(editor) {
+function submit() {
     // get code from CodeMirror editor
     const code = editor.getValue();
     const mode = editor.getOption("mode");
@@ -132,7 +133,7 @@ function submit(editor) {
 /**
  * Get problem text and generate HTML from the MD
  */
-function getProblem(editor, problem) {
+function getProblem(problem) {
     // reset number of resets per problem
     numResets = 0;
 
@@ -225,7 +226,7 @@ function disableEditingKeys() {
 /**
  * Disable mouse clicking within the CodeMirror editor.
  */
-function disableEditorMouseClicks(editor) {
+function disableEditorMouseClicks() {
     editor.on("mousedown", (instance, e) => {
         // focus on the editor when it get's clicked
         editor.focus();
