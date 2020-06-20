@@ -5,6 +5,7 @@ const path = require("path");
 const { LANGUAGES } = require('../constants');
 const child_process = require('child_process');
 const fs = require("fs");
+const shortid = require("shortid");
 
 // putting this into it's own constant ensures we don't have to read the directory everytime the user requests it
 // We could improve on this by allowing the server.js create a map that contains a problem ID and a path to the markdown file that 
