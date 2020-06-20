@@ -9,6 +9,8 @@ function n_fib(n) {}
 ```
 
 **Examples:**
-> n_fib(1) => 1  
-> n_fib(6) => 8  
-> n_fib(10) => 55
+```
+n_fib(1) == 1  
+n_fib(6) == 8  
+n_fib(10) == 55
+```

@@ -142,22 +142,31 @@ function getProblem(problem) {
     // get the problem text
     const language = editor.getOption("mode");
     fetch("/problem/" + problem + "/" + language)
-    .then(response => response.json())
-    .then(data => {
-        // create a markdown to HTML converter to generate GitHub Flavored Markdown
-        const converter = new showdown.Converter();
-        converter.setFlavor('github');
+        .then(response => response.json())
+        .then(data => {
+            // create a markdown to HTML converter to generate GitHub Flavored Markdown
+            const converter = new showdown.Converter();
+            converter.setFlavor('github');
 
-        // set problem div to generated problem HTML
-        document.getElementById("problem").innerHTML = converter.makeHtml(data.problem);
+            // set problem div to generated problem HTML
+            document.getElementById("problem").innerHTML = converter.makeHtml(data.problem);
 
-        // reset the number of resets
-        numResets = 0;
-        document.getElementById("numResets").innerHTML = numResets;
+            // syntax highlight code blocks
+            document.querySelectorAll("code").forEach(el => {
+                // give the element a code mirror class to allow for syntax highlighting via css
+                el.className = "cm-s-default";
 
-        // start the timer
-        startStopwatch();
-    });
+                // run the element through CodeMirror syntax highlighting
+                CodeMirror.runMode(el.innerText, editor.getOption("mode"), el);
+            });
+
+            // reset the number of resets
+            numResets = 0;
+            document.getElementById("numResets").innerHTML = numResets;
+
+            // start the timer
+            startStopwatch();
+        });
 }
 
 /**
