@@ -9,8 +9,7 @@ const assert = require("chai").assert;
 // get file to test
 const val = process.argv[3];
 const fileName = val.substring(val.indexOf(FLAG) + FLAG.length + 1);
-const path = require("path");
-const n_fib = path.resolve(`/server/${fileName}`);
+const n_fib = require(fileName);
 
 // the right answer since the secret tests are random numbers to prevent hardcoding
 function calculateAnswer(n) {

@@ -39,11 +39,8 @@ function submit({ problem, language, code }, callback)
     console.log("Commencing tests.");
     
     // create arguments for mocha command
-    // const testPath = path.join("../../problems", problem, problem + ".test.js");
     const testPath = path.resolve(`problems/${problem}/${problem}.test.js`);
-    const fileToTest = "--totest " + filename;
-
-    console.log(testPath + " " + fileToTest);
+    const fileToTest = "--totest " + path.resolve(filename);
 
     // run the file
     runCommand("mocha", [testPath, fileToTest], ({ stdout, stderr, exitCode }) => {
