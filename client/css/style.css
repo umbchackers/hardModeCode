@@ -24,9 +24,17 @@ body {
     border-radius: 5px;
 }
 
+#reset, #submit, #switchTheme {
+    border: 1px solid;
+}
+
 #reset, #submit {
     color: white;
-    border: 1px solid;
+}
+
+#switchTheme {
+    color: white;
+    background: black;
 }
 
 #reset {

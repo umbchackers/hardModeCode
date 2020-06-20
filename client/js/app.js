@@ -1,5 +1,6 @@
 const socket = io();
 let problem = "";
+let theme = "light";
 
 // create a CodeMirror instance
 const editor = CodeMirror(document.getElementById("editor"), {
@@ -35,8 +36,9 @@ socket.on("problem", msg => {
     // disable keys that would allow user to edit their input
     disableEditingKeys();
 
-    document.getElementById("reset").onclick = () => reset();
-    document.getElementById("submit").onclick = () => submit();
+    document.getElementById("reset").onclick = reset;
+    document.getElementById("submit").onclick = submit;
+    document.getElementById("switchTheme").onclick = toggleLightingTheme;
 })();
 
 /**
@@ -80,6 +82,36 @@ function populateCarousel() {
             problemCarousel.appendChild(problemButton);
         }
     });
+}
+
+/**
+ * Switch in between light and dark mode.
+ */
+function toggleLightingTheme() {
+    const button = document.getElementById("switchTheme");
+
+    // set dark mode
+    if (theme == "light") {
+        theme = "dark";
+
+        editor.setOption("theme", "material-darker");
+
+        // change button styling
+        button.innerText = "Light Mode";
+        button.style.color = "black";
+        button.style.background = "white";
+    }
+    // set light mode
+    else {
+        theme = "light";
+
+        editor.setOption("theme", "default");
+
+        // change button styling
+        button.innerText = "Dark Mode";
+        button.style.color = "white";
+        button.style.background = "black";
+    }
 }
 
 /**
