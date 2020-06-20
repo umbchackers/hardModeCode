@@ -10,7 +10,7 @@ const shortid = require("shortid");
 // putting this into it's own constant ensures we don't have to read the directory everytime the user requests it
 // We could improve on this by allowing the server.js create a map that contains a problem ID and a path to the markdown file that 
 // contains the problem. For now though, this will do.
-const problems = fs.readdirSync("client/problems");
+const problems = fs.readdirSync("problems/");
 exports.problems = problems;
 
 let cachedProblems = {};
@@ -18,7 +18,7 @@ function getProblem({ problem, language })
 {
     // Is this too hacky?
     let problemText = problem in cachedProblems ? cachedProblems[problem + getFileExtension(language)] : (() => {
-        let text = fs.readFileSync(path.join("./client/problems", problem, problem + getFileExtension(language) + ".md"), "utf-8").toString();
+        let text = fs.readFileSync(path.join("./problems", problem, problem + getFileExtension(language) + ".md"), "utf-8").toString();
         cachedProblems[problem + getFileExtension(language)] = text;
         return text;
     })();
@@ -32,22 +32,25 @@ function submit({ problem, language, code }, callback)
     const fileExtension = getFileExtension(language);
 
     // save file
-    const filename = `server/${shortid.generate()}${fileExtension}`;
+    const filename = `../${shortid.generate()}${fileExtension}`;
     fs.writeFileSync(filename, code);
 
     console.log("\nSaved file to " + filename);
     console.log("Commencing tests.");
     
     // create arguments for mocha command
-    const testPath = path.join("client/problems", problem, problem + ".test.js");
+    // const testPath = path.join("../../problems", problem, problem + ".test.js");
+    const testPath = path.resolve(`problems/${problem}/${problem}.test.js`);
     const fileToTest = "--totest " + filename;
 
+    console.log(testPath + " " + fileToTest);
+
     // run the file
-    runCommand("mocha", [testPath, fileToTest], (stdout, stderr, exitCode) => {
+    runCommand("mocha", [testPath, fileToTest], ({ stdout, stderr, exitCode }) => {
         console.log("Testing process exited with exit code", exitCode + ".");
 
         // remove trailing whitespace that results from reading the output stream
-        stdout = stdout.trim();
+        if (stdout !== "") stdout = stdout.trim();
 
         // if there is errors, get rid of any references to our filepath
         if (stderr) {
@@ -76,7 +79,8 @@ function submit({ problem, language, code }, callback)
  * @param {[String]} args 
  * @param {Function} callback 
  */
-async function runCommand(command, args, callback) {
+async function runCommand(command, args, callback) 
+{
     // start process
     const child = child_process.spawn(command, args);
     

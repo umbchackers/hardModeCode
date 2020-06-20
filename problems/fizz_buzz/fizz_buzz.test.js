@@ -10,7 +10,8 @@ const assert = require("chai").assert;
 // get file to test
 const val = process.argv[3];
 const fileName = val.substring(val.indexOf(FLAG) + FLAG.length + 1);
-const fizz_buzz = require(__dirname + "/../../../" + fileName); // This is really bad, I'm going to change this later
+const path = require("path");
+const fizz_buzz = path.resolve(`/server/${fileName}`);
 
 // the right answer since the secret tests are random numbers to prevent hardcoding
 function calculateAnswer(n) {
